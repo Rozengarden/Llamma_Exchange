@@ -49,7 +49,7 @@ Those features allow us to explore a totally different design space than the ori
 
 Before exploring this design space it seems important to me to stop and discuss the potential drawbacks of locking llama forever and how to address them.
 
-- All Llamas are 1/1, This means some design would become unavailable forever. However this can be an opportunity for extra cash-flow, by allowing peoples to exchange a llama in the protocol for another one for a fee.
+- All Llamas are 1/1, This means some design would become unavailable forever. However this can be an opportunity for extra cash-flow, by allowing peoples to exchange a llama in the protocol for another one for a fee. While for brand perspective floor go up and "strategy" are sexy, this is could be a genuinely usefull feature.
 - Yield dilution. The more Llamas are locked in the locker the lesser your share of the reward from the monthly distribution. However this effect would not be that big in today's context. Currently 720 llamas are in the locker, add that another 135 are currently in the treasury and thus not lockable (or we revolt), this leave only 256 llamas in the wild, if they were to be all locked this would lead to a maximum of around 26% of dilution.
 - The locker, while being quite close to an immutable contract, the distribution of the yield is very much a rug-gable process, should the collection stop the yield distribution or change the contract that get said yield. The protocol would hence need to have a way to wind down or mutate, either automatically, through governance or even just giving the keys to the treasury.
 
@@ -57,9 +57,58 @@ Before exploring this design space it seems important to me to stop and discuss 
 
 #### No token
 
-Thanks to the yield from the locker the protocol doesn't NEED a token. By funnelling the yield into buying more llamas the protocol can grow it's inventory exponentially. This however would suffer from an absolute zero cold start, needing dozen of years for the yield of one llama to buy a second one, assuming the past yield represent future performance and llama price wouldn't change, and that's still assuming you are starting with 1 llama, while under those assumption a minimum of 10 Llamas would be needed to see an effect on floor price in ones lifespan.
+Thanks to the yield from the locker the protocol doesn't NEED a token. By funnelling the yield into buying more llamas the protocol can grow it's inventory exponentially. This however would suffer from an absolute zero cold start, needing dozen of years for the yield of one llama to buy a second one, assuming the past yield represent future performance and llama price wouldn't change, and that's still assuming you are starting with 1 llama, while under those assumption a minimum of 10 Llamas would be needed to see an effect on floor price in ones lifespan. This poor offering would also make it hard to generate fee on the side from Llamas exchange. Last nail on the coffin, no token means no presale to pay for stuff like audits or devs.
+
+1. Ask for Llamas as sacrifice
+2. lock them
+3. use yield to buy more Llamas and goto 2.
+
+#### Copy Paste
+
+The design that would be the closest to the original and with minimal modification would be the one where the yield is used to buy back & burn the protocol token. Incidently a [protocol doing just that with veAERO NFT](https://x.com/aerostrategyfi) popped in my TL while writting those lines, this is really interesting to see as veAERO are quite close to Llamas in this yield generating NFT property (40 acres for llamas, anynyan ?). 
+
+1. Create a token and put all the liquidity in a token/ETH pool on UNIv4 with a heavy fee
+2. As peoples buy the token the protocol who own a huge chunk of the supply of token will start to accrue fee in ETH
+3. Those fees are than used to buy a Llama from the collection
+4. Lock the Llama
+5. When yield is collected, it is used to buy back and burn the token from step 1.
+
+This design stick close to the original and is one of the less complex one except for the no token option. It make the buy-back & burn less sizeable but also less volatile, and more importantly the flywheel doesn't become a liability if for a reason or another the protocol see a long period of inactivity.
+
+#### I fear no lawyer
+
+Buy-back & burn is a meme, it's sole real advantage is in defering your taxes if your country taxes dividend. But even then wrapper contract are a things but am not ur taxes lawyer so whatever. Alll this to say that instead of buying back the original token and burning it, the yield could be distributed to peoples who staked the token, stakeless can be argued but this way make it easy to not give money to the protocol and doesn't reward peoples providing the liquidity (which is important when your sole source of revenue is trading fee).
+
+1. Create a token and put all the liquidity in a token/ETH pool on UNIv4 with a heavy fee
+2. As peoples buy the token the protocol who own a huge chunk of the supply of token will start to accrue fee in ETH
+3. Those fees are than used to buy a Llama from the collection
+4. Lock the Llama
+5. When yield is collected, it is distributed to peoples who staked the token (over the course of a month for MEV reason).
+
+#### Llama Co.
+
+While depending on swap fee is transparent for the user it is a position that will erode over time as peoples will provide liquidity alongside you or even in more attractive pool with smaller swap fee (nb: the protocol would still get swap fee through arbitrage if price moves a lot, but this would be marginal with a 10% fee). The protocol end up in a similar position as the wikimedia fundation, asking for donation, while some peoples will be generous, most of the population will enjoy the ride for free. This misalignement of the players could be problematic in the long run. Instead of rellying on swap fee the protocol could directly sell it's token for Llama and redistributing the yields to the token staker closer to a real company. However this approach suffer from a few problems, namely lacking in attractiveness for the investor over buying a Llama directly, the exchange part of the protocol would need to bring a good amount of revenue to make up for it.
+
+1. Exchange a Llam for a fixed price of X token.
+2. lock it.
+3. distribute the yield to the token staker.
 
 #### The purrfect one
 
 Don't hesitate to share your view.
 
+### Implementation
+
+There are a few point worth mentioning should one want to implement one of the design mentioned earlier.
+
+#### Buying the floor
+
+Most of the strategy do not really check that they are indeed buying the lowest price NFT, they just assume that the market is perfectly efficient and that the pot will grow slowly enough to limit value leak. While those assumption are mostly fine, they still caused issue, especialy when no "honest" MEV bot are set up and the TGE rack up a tons of fee. However yield from the locker are definitely not comming in small batch, as such extra precaution needs to be taken, like taking a snapshot of the treasury before collecting the yield and increasing linearly between this value and the one post claim over the course of a few days.
+
+#### One asset to rule them all
+
+The locker can distribute many assets, but it may be interesting to convert them all into a single maybe totaly diferent assets like ETH as it is the one that tends to follow the nft prices the more closely. To do this preliminary research have pointed me to the yearn v3 auction contract. If it is really possible it would simplify the design and even benefit from the infrastructure built around them depending on the circumstances.
+
+#### Upgreadability
+
+As mentioned earlier the Locker contract may only be temporary, as such care need to be taken from the start on how to deal with this possibility. If yield stop what is the plan, how do you detect yield has stopped, many question needs to be answered.
