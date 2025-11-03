@@ -39,7 +39,7 @@ This is done trough a contract called [The Locker](https://locker.thellamas.io/)
 This design has two main impact on the collection:
 
 - Llama are yield generating assets, they magically make money on their own
-- This has greatly diminished the amount of NFT from the collection listed on exchange platform (19 at the time of writing, slightly up from ATL due to OPEN snapshot) as peoples seems to quite like the deal of getting $40 (or 25$ during uptober) a month for some restriction on liquidity.
+- This has greatly diminished the amount of NFT from the collection listed on exchange platform (19 at the time of writing, slightly up from ATL due to OPEN snapshot) as peoples seems to quite like the deal of getting $40 (or 25 during uptober) a month for some restriction on liquidity.
 
 ## Impact on a potential Strategy
 
